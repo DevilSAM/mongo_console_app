@@ -1,3 +1,5 @@
+const ObjectId = require('mongodb').ObjectID;
+
 let arg1 = process.argv[2];
 let arg2 = process.argv[3];
 
@@ -37,15 +39,8 @@ client.connect(function(err) {
 
     // вывод опций по ID авто
     const findOptions = async function(db, id) {
-        const allcars = await db.collection('mycars').find({}).toArray();
-        for (let car of allcars) {
-            if (car["_id"].toString() == id) {
-                console.log(`\nOPTIONS FOR _ID == ${id}:\n`)
-                for (let opt of car["car_options"]) {
-                    console.log(opt);
-                }
-            }
-        }
+        const newerCars = await db.collection('mycars').find({"_id": ObjectId(id)}).project({car_options:1, _id:0}).toArray();
+        console.log(newerCars[0]['car_options']); 
         await client.close();
     };
 
